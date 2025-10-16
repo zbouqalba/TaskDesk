@@ -76,8 +76,8 @@ export async function action({ request }: Route.ActionArgs) {
 
     console.log("Task created successfully:", newTask);
 
-    // Recharger la page pour afficher la nouvelle tâche
-    return redirect("/dashboard");
+    // Retourner success au lieu de rediriger
+    return { success: true };
   } catch (error) {
     console.error("Error creating task:", error);
     return { error: "Une erreur est survenue lors de la création de la tâche" };
@@ -86,6 +86,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Dashboard() {
   const { tasks } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -93,10 +94,11 @@ export default function Dashboard() {
 
   // Fermer la modale après la soumission réussie
   useEffect(() => {
-    if (navigation.state === "loading") {
+    if (actionData?.success) {
+      console.log("Task created successfully, closing modal");
       setIsVisible(false);
     }
-  }, [navigation.state]);
+  }, [actionData]);
 
   function handleButton() {
     console.log("Button clicked, opening modal");
