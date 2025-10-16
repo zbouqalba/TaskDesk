@@ -1,14 +1,56 @@
-import { useState } from "react";
+import { Form, useActionData } from "react-router";
+import type { Route } from "./+types/login";
+import { prisma } from "~/lib/prisma.server";
+import { redirect } from "react-router";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "TaskDesk - Connexion" },
+    { name: "description", content: "Connectez-vous à votre compte TaskDesk" },
+  ];
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  // Validation
+  if (!email || !password) {
+    return { error: "Tous les champs sont requis" };
+  }
+
+  try {
+    // Chercher l'utilisateur par email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // Vérifier si l'utilisateur existe
+    if (!user) {
+      return { error: "Email ou mot de passe incorrect" };
+    }
+
+    // TODO: Dans une vraie app, comparer avec bcrypt
+    // Pour l'instant, on compare directement (NON SÉCURISÉ en production!)
+    if (user.password !== password) {
+      return { error: "Email ou mot de passe incorrect" };
+    }
+
+    // Authentification réussie
+    // TODO: Créer une session ici (cookies, JWT, etc.)
+    console.log("Login successful for user:", user.username);
+    
+    // Rediriger vers le dashboard ou page d'accueil
+    return redirect("/dashboard");
+  } catch (error) {
+    console.error("Login error:", error);
+    return { error: "Une erreur est survenue lors de la connexion" };
+  }
+}
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Logique de connexion à implémenter
-    console.log("Login attempt:", { email, password });
-  };
+  const actionData = useActionData<{ error?: string }>();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-4">
@@ -36,8 +78,15 @@ export default function Login() {
             <p className="text-gray-500">Connectez-vous à votre compte TaskDesk</p>
           </div>
 
+          {/* Message d'erreur */}
+          {actionData?.error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {actionData.error}
+            </div>
+          )}
+
           {/* Formulaire */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <Form method="post" className="space-y-6">
             {/* Email */}
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -61,9 +110,8 @@ export default function Login() {
                 </div>
                 <input
                   id="email"
+                  name="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="nom@exemple.com"
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-900"
@@ -94,9 +142,8 @@ export default function Login() {
                 </div>
                 <input
                   id="password"
+                  name="password"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-900"
@@ -128,7 +175,7 @@ export default function Login() {
             >
               Se connecter
             </button>
-          </form>
+          </Form>
 
           {/* Divider */}
           <div className="relative">

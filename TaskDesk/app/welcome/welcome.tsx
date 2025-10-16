@@ -1,27 +1,7 @@
-import { useState } from "react";
+import { Form, useActionData } from "react-router";
 
 export function Welcome() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (password.length !== 8 && confirmPassword.length !== 8) {
-      alert("Les mots de passe doivent faire 8 caractères!");
-      return;
-    } else if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas!");
-      return;
-    } else {
-      // Continue with submission
-    }
-
-    // Logique d'inscription à implémenter
-    console.log("Signup attempt:", { username, email, password });
-  };
+  const actionData = useActionData<{ error?: string }>();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 p-4">
@@ -49,8 +29,15 @@ export function Welcome() {
             <p className="text-gray-500">Rejoignez TaskDesk dès aujourd'hui!</p>
           </div>
 
+          {/* Message d'erreur */}
+          {actionData?.error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {actionData.error}
+            </div>
+          )}
+
           {/* Formulaire */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <Form method="post" className="space-y-5">
             {/* Username */}
             <div className="space-y-2">
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -74,9 +61,8 @@ export function Welcome() {
                 </div>
                 <input
                   id="username"
+                  name="username"
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="johndoe"
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-900"
@@ -107,9 +93,8 @@ export function Welcome() {
                 </div>
                 <input
                   id="email"
+                  name="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="nom@exemple.com"
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-900"
@@ -140,9 +125,8 @@ export function Welcome() {
                 </div>
                 <input
                   id="password"
+                  name="password"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
                   minLength={8}
@@ -175,9 +159,8 @@ export function Welcome() {
                 </div>
                 <input
                   id="confirmPassword"
+                  name="confirmPassword"
                   type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   required
                   minLength={8}
@@ -192,7 +175,7 @@ export function Welcome() {
             >
               Créer mon compte
             </button>
-          </form>
+          </Form>
 
           {/* Divider */}
           <div className="relative">
