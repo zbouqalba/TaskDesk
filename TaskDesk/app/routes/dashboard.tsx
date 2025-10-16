@@ -1,4 +1,9 @@
+import Task from "~/components/Task";
 import type { Route } from "./+types/dashboard";
+import { redirect } from "react-router";
+import { useState } from "react";
+
+import CreateTaskForm from "~/components/CreateTaskForm";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,6 +13,16 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Dashboard() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  function handleButton() {
+    setIsVisible(true);
+  }
+
+  function handleClose() {
+    setIsVisible(false);
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -36,11 +51,17 @@ export default function Dashboard() {
           {/* Section des tâches - à implémenter */}
           <div className="border-t pt-6 mt-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Mes tâches</h3>
-            <p className="text-gray-500 italic">Aucune tâche pour le moment...</p>
+            <Task title="Tâche 1" description="Description de la tâche 1" status="completed" dueDate="2023-09-30" />
+            <Task title="Tâche 2" description="Description de la tâche 2" status="in-progress" dueDate="2023-10-05" />
             
-            <button className="mt-6 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+            <button 
+              className="mt-6 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition" 
+              onClick={handleButton}
+            >
               + Créer une tâche
             </button>
+
+            {isVisible && <CreateTaskForm isVisible={isVisible} onClose={handleClose} />}
           </div>
         </div>
       </main>
