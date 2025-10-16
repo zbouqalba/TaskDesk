@@ -30,7 +30,7 @@ export default function CreateTaskForm({ isVisible, onClose }: CreateTaskFormPro
         </div>
 
         {/* Formulaire */}
-        <Form className="space-y-4">
+        <Form method="post" className="space-y-4" onSubmit={() => console.log("Form submitted!")}>
           {/* Title */}
           <div className="space-y-2">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">
@@ -87,7 +87,6 @@ export default function CreateTaskForm({ isVisible, onClose }: CreateTaskFormPro
             <button
               type="submit"
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-semibold"
-              onClick={onClose}
             >
               Créer la tâche
             </button>

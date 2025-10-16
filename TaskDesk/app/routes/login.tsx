@@ -2,6 +2,7 @@ import { Form, useActionData } from "react-router";
 import type { Route } from "./+types/login";
 import { prisma } from "~/lib/prisma.server";
 import { redirect } from "react-router";
+import Dashboard from "./dashboard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -42,7 +43,7 @@ export async function action({ request }: Route.ActionArgs) {
     console.log("Login successful for user:", user.username);
     
     // Rediriger vers le dashboard ou page d'accueil
-    return redirect("/dashboard");
+    return <Dashboard />;
   } catch (error) {
     console.error("Login error:", error);
     return { error: "Une erreur est survenue lors de la connexion" };
